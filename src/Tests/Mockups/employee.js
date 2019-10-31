@@ -10,6 +10,16 @@ class Employee {
       department: 'Management',
       address: 'Lambe street, Lagos',
     };
+
+    this.validEmployee = {
+      email: 'ezeemmanuel2010@gmail.com',
+      password: 'adminPassword',
+    };
+
+    this.invalidEmployee = {
+      email: 'invaliduser@gmail.com',
+      password: 'invalidpassword',
+    };
   }
 }
 
