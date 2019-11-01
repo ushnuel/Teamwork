@@ -20,26 +20,20 @@ const createTableComments = `CREATE TABLE comments(
 
 const dropTablesGifs = 'DROP TABLE IF EXISTS gifs CASCADE';
 const createTableGifs = `CREATE TABLE gifs(
-  id bigserial NOT NULL,
-  employeeID bigserial,
+  gifId bigserial NOT NULL,
   createdOn timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
   title character varying(100) NOT NULL,
-  url character varying NOT NULL,
-  CONSTRAINT gif_pkey PRIMARY KEY(id),
-  CONSTRAINT gif_employee_fkey FOREIGN KEY(employeeID)
-    REFERENCES employees
+  image_url character varying NOT NULL,
+  CONSTRAINT gif_pkey PRIMARY KEY(gifId)
 )`;
 
 const dropTablesArticles = 'DROP TABLE IF EXISTS articles CASCADE';
 const createTableArticles = `CREATE TABLE articles(
   id bigserial NOT NULL,
-  authorID bigserial,
   articleTitle character varying(100) NOT NULL,
   createdOn timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
   article character varying NOT NULL,
-  CONSTRAINT article_pkey PRIMARY KEY(id),
-  CONSTRAINT article_employee_fkey FOREIGN KEY(authorID)
-    REFERENCES employees
+  CONSTRAINT article_pkey PRIMARY KEY(id)
 )`;
 
 const dropTableEmployees = 'DROP TABLE IF EXISTS employees CASCADE';
@@ -56,17 +50,43 @@ const createTableEmployees = `CREATE TABLE employees(
   CONSTRAINT employee_pkey PRIMARY KEY(id)
 )`;
 
+const dropTableEmployeesGif = 'DROP TABLE IF EXISTS employees_gif CASCADE';
+const createTableEmployeesGif = `CREATE TABLE employees_gif(
+  employeeID bigserial NOT NULL,
+  gifID bigserial NOT NULL,
+  CONSTRAINT employee_gif_pkey PRIMARY KEY(employeeID, gifID),
+  CONSTRAINT gif_employee_fkey FOREIGN KEY(gifID)
+    REFERENCES gifs,
+  CONSTRAINT employee_gif_fkey FOREIGN KEY(employeeID)
+    REFERENCES employees
+)`;
+
+const dropTableEmpArticle = 'DROP TABLE IF EXISTS employees_article CASCADE';
+const createTableEmployeesArticle = `CREATE TABLE employees_article(
+  employeeID bigserial NOT NULL,
+  articleID bigserial NOT NULL,
+  CONSTRAINT employee_article_pkey PRIMARY KEY(employeeID, articleID),
+  CONSTRAINT article_employee_fkey FOREIGN KEY(articleID)
+    REFERENCES articles,
+  CONSTRAINT employee_article_fkey FOREIGN KEY(employeeID)
+    REFERENCES employees
+)`;
+
 class CreateTables {
   static async create() {
     await DB.query(dropTableEmployees);
     await DB.query(dropTablesArticles);
     await DB.query(dropTablesGifs);
     await DB.query(dropTablesComments);
+    await DB.query(dropTableEmployeesGif);
+    await DB.query(dropTableEmpArticle);
 
     await DB.query(createTableEmployees);
     await DB.query(createTableGifs);
     await DB.query(createTableArticles);
     await DB.query(createTableComments);
+    await DB.query(createTableEmployeesGif);
+    await DB.query(createTableEmployeesArticle);
   }
 }
 
