@@ -17,5 +17,6 @@ switch (process.env.NODE_ENV) {
     break;
 }
 config.JWT_SECRET = process.env.JWT_SECRET;
+config.CLOUDINARY = process.env.CLOUDINARY_URL;
 
 export default config;

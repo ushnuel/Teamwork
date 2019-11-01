@@ -16,6 +16,9 @@ export default class JWT {
             throw new ErrorHandler('Authentication failed: Invalid token', 401);
           }
           req.user = decoded;
+          if (req.body.id && req.body.id !== req.user.userId) {
+            throw new ErrorHandler('Invalid user', 400);
+          }
         });
         next();
       } else {
