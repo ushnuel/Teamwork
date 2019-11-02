@@ -5,8 +5,8 @@ import { cloudinary } from '../Middlewares';
 
 const router = Router();
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
+const uploadImage = multer({ storage }).single('image');
 
-router.post('/', upload.single('image'), cloudinary.upload, GifController.post);
+router.post('/', uploadImage, cloudinary.upload, GifController.post);
 
 export default router;

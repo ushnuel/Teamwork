@@ -29,11 +29,11 @@ const createTableGifs = `CREATE TABLE gifs(
 
 const dropTablesArticles = 'DROP TABLE IF EXISTS articles CASCADE';
 const createTableArticles = `CREATE TABLE articles(
-  id bigserial NOT NULL,
-  articleTitle character varying(100) NOT NULL,
+  articleId bigserial NOT NULL,
+  title character varying(100) NOT NULL,
   createdOn timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
   article character varying NOT NULL,
-  CONSTRAINT article_pkey PRIMARY KEY(id)
+  CONSTRAINT article_pkey PRIMARY KEY(articleId)
 )`;
 
 const dropTableEmployees = 'DROP TABLE IF EXISTS employees CASCADE';
