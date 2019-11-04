@@ -70,4 +70,20 @@ describe('ARTICLE TESTS', () => {
         .catch(err => done(err));
     });
   });
+
+  describe('DELETE articles/:articleId', () => {
+    it('Employees can delete their own articles', (done) => {
+      chai
+        .request(server)
+        .delete(`${route}/articles/${newArticle.id}`)
+        .auth(newEmployee.token, { type: 'bearer' })
+        .send(editedArticle)
+        .then((res) => {
+          const { message } = res.body.data;
+          expect(message).to.eql('Article successfully deleted');
+          done();
+        })
+        .catch(err => done(err));
+    });
+  });
 });

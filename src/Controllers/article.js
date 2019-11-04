@@ -33,4 +33,15 @@ export default class ArticleController {
       next(error);
     }
   }
+
+  static async delete(req, res, next) {
+    try {
+      const article = await Article.get(req.params.articleId);
+      await Article.delete(req.user.userId, article.articleid);
+      const data = { message: 'Article successfully deleted' };
+      FeedbackHandler.success(res, 200, data);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

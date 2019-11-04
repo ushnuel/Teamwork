@@ -38,8 +38,20 @@ export default class Article {
       throw new ErrorHandler(err.message, 400);
     });
     if (!article) {
-      throw new ErrorHandler("Article not found, can't edit article", 404);
+      throw new ErrorHandler(
+        'Article not found, request cannot be processed',
+        404,
+      );
     }
     return article;
+  }
+
+  static async delete(employeeId, articleId) {
+    const query = `DELETE FROM articles
+    WHERE employeeid = $1 AND articleid = $2`;
+    const params = [employeeId, articleId];
+    await DB.query(query, params).catch((err) => {
+      throw new ErrorHandler(err.message, 400);
+    });
   }
 }
