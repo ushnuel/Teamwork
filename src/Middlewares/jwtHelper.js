@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import config from '../Config';
-import ErrorHandler from '../Helpers';
+import { ErrorHandler } from '../Helpers';
 
 export default class JWT {
   static createToken(payload) {
@@ -9,6 +9,9 @@ export default class JWT {
 
   static authorize(req, res, next) {
     try {
+      if (!req.headers.authorization) {
+        throw new ErrorHandler('Invalid authorization header', 401);
+      }
       const token = req.headers.authorization.split(' ')[1];
       if (token) {
         jwt.verify(token, config.JWT_SECRET, (err, decoded) => {
@@ -17,7 +20,10 @@ export default class JWT {
           }
           req.user = decoded;
           if (req.body.id && req.body.id !== req.user.userId) {
-            throw new ErrorHandler('Invalid user', 400);
+            throw new ErrorHandler(
+              'Invalid user, Permission not granted ',
+              403,
+            );
           }
         });
         next();

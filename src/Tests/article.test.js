@@ -10,11 +10,12 @@ chai.use(chaiHttp);
 should();
 
 const { employee } = new Employee();
-const { article } = new Article();
+const { article, editedArticle } = new Article();
 const route = '/api/v1';
 const newEmployee = {};
+const newArticle = {};
 
-describe('GIF TESTS', () => {
+describe('ARTICLE TESTS', () => {
   before((done) => {
     chai
       .request(server)
@@ -22,6 +23,7 @@ describe('GIF TESTS', () => {
       .send(employee)
       .then((res) => {
         const { data } = res.body;
+        newEmployee.id = data.id;
         newEmployee.token = data.token;
         done();
       })
@@ -30,6 +32,7 @@ describe('GIF TESTS', () => {
 
   describe('POST /articles', () => {
     it('Employees can create and/or share articles with colleaques', (done) => {
+      article.employeeID = newEmployee.id;
       chai
         .request(server)
         .post(`${route}/articles`)
@@ -42,6 +45,26 @@ describe('GIF TESTS', () => {
           expect(data).to.have.property('createdon');
           const { message } = data;
           expect(message).to.eql('Article successfully posted');
+          newArticle.id = data.articleid;
+          done();
+        })
+        .catch(err => done(err));
+    });
+  });
+
+  describe('PATCH articles/:articleId', () => {
+    it('Employees can edit their own articles', (done) => {
+      chai
+        .request(server)
+        .patch(`${route}/articles/${newArticle.id}`)
+        .auth(newEmployee.token, { type: 'bearer' })
+        .send(editedArticle)
+        .then((res) => {
+          const { data } = res.body;
+          expect(data.title).to.be.eql(editedArticle.title);
+          expect(data.article).to.be.eql(editedArticle.article);
+          const { message } = data;
+          expect(message).to.eql('Article successfully updated');
           done();
         })
         .catch(err => done(err));
