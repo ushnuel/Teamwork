@@ -1,19 +1,30 @@
 /* eslint-disable no-console */
 import DB from '.';
 
-const dropTablesComments = 'DROP TABLE IF EXISTS comments CASCADE';
-const createTableComments = `CREATE TABLE comments(
+const dropTablesCommentsArticles =  'DROP TABLE IF EXISTS comments_articles CASCADE';
+const createTableCommentsArticles = `CREATE TABLE comments_articles(
   id bigserial NOT NULL,
   employeeID bigserial,
   articleID bigserial,
+  createdOn timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
+  comment character varying NOT NULL,
+  CONSTRAINT comment_article_pkey PRIMARY KEY(id),
+  CONSTRAINT comment_article_user_fkey FOREIGN KEY(employeeID)
+    REFERENCES employees,
+  CONSTRAINT comment_article_id_fkey FOREIGN KEY(articleID)
+    REFERENCES articles
+)`;
+
+const dropTablesCommentsGifs = 'DROP TABLE IF EXISTS comments_gifs CASCADE';
+const createTableCommentsGifs = `CREATE TABLE comments_gifs(
+  id bigserial NOT NULL,
+  employeeID bigserial,
   gifID bigserial,
   createdOn timestamp with time zone DEFAULT CURRENT_TIMESTAMP,
   comment character varying NOT NULL,
-  CONSTRAINT comment_pkey PRIMARY KEY(id),
-  CONSTRAINT comment_user_fkey FOREIGN KEY(employeeID)
+  CONSTRAINT comment_gif_pkey PRIMARY KEY(id),
+  CONSTRAINT comment_gif_user_fkey FOREIGN KEY(employeeID)
     REFERENCES employees,
-  CONSTRAINT comment_article_id_fkey FOREIGN KEY(articleID)
-    REFERENCES articles,
   CONSTRAINT comment_gif_id_fkey FOREIGN KEY(gifID)
     REFERENCES gifs
 )`;
@@ -61,12 +72,14 @@ class CreateTables {
     await DB.query(dropTableEmployees);
     await DB.query(dropTablesArticles);
     await DB.query(dropTablesGifs);
-    await DB.query(dropTablesComments);
+    await DB.query(dropTablesCommentsGifs);
+    await DB.query(dropTablesCommentsArticles);
 
     await DB.query(createTableEmployees);
     await DB.query(createTableGifs);
     await DB.query(createTableArticles);
-    await DB.query(createTableComments);
+    await DB.query(createTableCommentsArticles);
+    await DB.query(createTableCommentsGifs);
   }
 }
 
