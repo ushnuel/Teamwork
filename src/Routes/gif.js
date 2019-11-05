@@ -9,5 +9,6 @@ const uploadImage = multer({ storage }).single('image');
 
 router.post('/', uploadImage, cloudinary.upload, GifController.post);
 router.delete('/:gifId', GifController.delete);
+router.get('/feed', GifController.feed);
 
 export default router;
