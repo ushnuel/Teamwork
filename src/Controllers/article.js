@@ -44,4 +44,14 @@ export default class ArticleController {
       next(error);
     }
   }
+
+  static async feed(req, res, next) {
+    try {
+      const articles = await Article.feed();
+      const data = [...articles];
+      FeedbackHandler.success(res, 200, data);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
