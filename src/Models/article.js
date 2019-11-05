@@ -68,6 +68,12 @@ export default class Article {
     const articles = await DB.query(query, '', true).catch((err) => {
       throw new ErrorHandler(err.message, 400);
     });
+    if (articles.length <= 0) {
+      throw new ErrorHandler(
+        'There are no articles available. Create one now!',
+        404,
+      );
+    }
     return articles;
   }
 }

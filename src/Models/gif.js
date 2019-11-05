@@ -38,4 +38,26 @@ export default class Gif {
       throw new ErrorHandler(err.message, 400);
     });
   }
+
+  static async feed() {
+    const query = `SELECT 
+    gifid AS id,
+    createdon,
+    image_url AS url,
+    g.employeeid AS authorid,
+    title
+    FROM gifs g
+    ORDER BY
+    createdon DESC`;
+    const gifs = await DB.query(query, '', true).catch((err) => {
+      throw new ErrorHandler(err.message, 400);
+    });
+    if (gifs.length <= 0) {
+      throw new ErrorHandler(
+        'There are no gif posts available. Create one now!',
+        404,
+      );
+    }
+    return gifs;
+  }
 }

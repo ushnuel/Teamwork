@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import { describe, it, before } from 'mocha';
 import chai, { expect, should } from 'chai';
 import chaiHttp from 'chai-http';
@@ -79,6 +80,22 @@ describe('GIF TESTS', () => {
     });
   });
 
+  describe('GET gifs/feed', () => {
+    it('Employees can view all gif posts', (done) => {
+      chai
+        .request(server)
+        .get(`${route}/gifs/feed`)
+        .auth(newEmployee.token, { type: 'bearer' })
+        .then((res) => {
+          const { data, status } = res.body;
+          expect(status).to.eql('success');
+          expect(data).to.be.an('array').and.not.empty;
+          done();
+        })
+        .catch(error => done(error));
+    });
+  });
+
   describe('DELETE /gifs/:gifId', () => {
     it('Employees can delete their gif posts', (done) => {
       chai
@@ -105,6 +122,22 @@ describe('GIF TESTS', () => {
           done();
         })
         .catch(err => done(err));
+    });
+
+    it('Throw error if there are no gif post present in the database', (done) => {
+      chai
+        .request(server)
+        .get(`${route}/gifs/feed`)
+        .auth(newEmployee.token, { type: 'bearer' })
+        .then((res) => {
+          const { error, status } = res.body;
+          expect(status).to.eql('error');
+          expect(error).to.be.eql(
+            'There are no gif posts available. Create one now!',
+          );
+          done();
+        })
+        .catch(error => done(error));
     });
   });
 });
