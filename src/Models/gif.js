@@ -17,8 +17,8 @@ export default class Gif {
     return gif;
   }
 
-  static async checkId(gifId) {
-    const query = `SELECT gifid FROM gifs
+  static async get(gifId) {
+    const query = `SELECT * FROM gifs
     WHERE gifid = $1`;
     const param = [gifId];
     const gif = await DB.query(query, param).catch((err) => {
