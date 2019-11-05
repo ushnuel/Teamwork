@@ -22,7 +22,7 @@ export default class GifController {
 
   static async delete(req, res, next) {
     try {
-      const gif = await Gif.checkId(req.params.gifId);
+      const gif = await Gif.get(req.params.gifId);
       await Gif.delete(gif.gifid, req.user.userId);
       const data = { message: 'Gif post successfully deleted' };
       FeedbackHandler.success(res, 200, data);
