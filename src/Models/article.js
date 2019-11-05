@@ -54,4 +54,20 @@ export default class Article {
       throw new ErrorHandler(err.message, 400);
     });
   }
+
+  static async feed() {
+    const query = `SELECT 
+    articleid AS id,
+    createdon,
+    title,
+    article,
+    employeeid AS authorId
+    FROM articles
+    ORDER BY 
+    createdon DESC`;
+    const articles = await DB.query(query, '', true).catch((err) => {
+      throw new ErrorHandler(err.message, 400);
+    });
+    return articles;
+  }
 }

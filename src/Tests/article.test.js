@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 import { describe, it, before } from 'mocha';
 import chai, { expect, should } from 'chai';
 import chaiHttp from 'chai-http';
@@ -71,13 +72,28 @@ describe('ARTICLE TESTS', () => {
     });
   });
 
+  describe('GET articles/feed', () => {
+    it('Employees can view all articles', (done) => {
+      chai
+        .request(server)
+        .get(`${route}/articles/feed`)
+        .auth(newEmployee.token, { type: 'bearer' })
+        .then((res) => {
+          const { data, status } = res.body;
+          expect(status).to.eql('success');
+          expect(data).to.be.an('array').and.not.empty;
+          done();
+        })
+        .catch(error => done(error));
+    });
+  });
+
   describe('DELETE articles/:articleId', () => {
     it('Employees can delete their own articles', (done) => {
       chai
         .request(server)
         .delete(`${route}/articles/${newArticle.id}`)
         .auth(newEmployee.token, { type: 'bearer' })
-        .send(editedArticle)
         .then((res) => {
           const { message } = res.body.data;
           expect(message).to.eql('Article successfully deleted');
