@@ -3,7 +3,9 @@ import { ErrorHandler } from '../Helpers';
 
 export default class Article {
   static async create({ title, article }, employeeId) {
-    const query = `INSERT INTO articles (
+    const query = `
+    INSERT 
+    INTO articles (
       title,
       article,
       employeeID
@@ -18,11 +20,12 @@ export default class Article {
   }
 
   static async edit(employeeId, { title, article }, articleId) {
-    const query = `UPDATE articles
+    const query = `
+    UPDATE 
+    articles
     SET title = $1, article = $2
     WHERE articleid = $3 AND employeeid = $4
     RETURNING *`;
-
     const params = [title, article, articleId, employeeId];
     const editedArticle = await DB.query(query, params).catch((err) => {
       throw new ErrorHandler(err.message, 400);
@@ -31,7 +34,14 @@ export default class Article {
   }
 
   static async get(articleId) {
-    const query = `SELECT * FROM articles
+    const query = `
+    SELECT 
+    articleid as id,
+    employeeid as authorid,
+    title,
+    createdon,
+    article
+    FROM articles
     WHERE articleid = $1`;
     const param = [articleId];
     const article = await DB.query(query, param).catch((err) => {
@@ -47,8 +57,12 @@ export default class Article {
   }
 
   static async delete(employeeId, articleId) {
-    const query = `DELETE FROM articles
-    WHERE employeeid = $1 AND articleid = $2`;
+    const query = `
+    DELETE 
+    FROM articles
+    WHERE 
+    employeeid = $1 
+    AND articleid = $2`;
     const params = [employeeId, articleId];
     await DB.query(query, params).catch((err) => {
       throw new ErrorHandler(err.message, 400);

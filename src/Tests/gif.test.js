@@ -75,6 +75,22 @@ describe('GIF TESTS', () => {
     });
   });
 
+  describe('GET gifs/:gifId', () => {
+    it('Employees can view a specific gif post and its comments(if any)', (done) => {
+      chai
+        .request(server)
+        .get(`${route}/gifs/${newGif.id}`)
+        .auth(newEmployee.token, { type: 'bearer' })
+        .then((res) => {
+          const { data } = res.body;
+          expect(data).have.property('comments');
+          expect(data.comments).to.be.an('array');
+          done();
+        })
+        .catch(err => done(err));
+    });
+  });
+
   describe('GET gifs/feed', () => {
     it('Employees can view all gif posts', (done) => {
       chai

@@ -3,7 +3,9 @@ import { ErrorHandler } from '../Helpers';
 
 export default class Gif {
   static async create(title, url, employeeId) {
-    const query = `INSERT INTO gifs(
+    const query = `
+    INSERT 
+    INTO gifs(
       title,
       image_url,
       employeeid
@@ -18,7 +20,14 @@ export default class Gif {
   }
 
   static async get(gifId) {
-    const query = `SELECT * FROM gifs
+    const query = `
+    SELECT
+    gifid as id,
+    employeeid as authorid,
+    title,
+    image_url as url,
+    createdon
+    FROM gifs
     WHERE gifid = $1`;
     const param = [gifId];
     const gif = await DB.query(query, param).catch((err) => {
@@ -31,8 +40,11 @@ export default class Gif {
   }
 
   static async delete(gifId, employeeId) {
-    const query = `DELETE FROM gifs
-    WHERE gifid = $1 AND employeeid = $2`;
+    const query = `
+    DELETE 
+    FROM gifs
+    WHERE gifid = $1 
+    AND employeeid = $2`;
     const params = [gifId, employeeId];
     await DB.query(query, params).catch((err) => {
       throw new ErrorHandler(err.message, 400);

@@ -43,4 +43,20 @@ export default class Comment {
     });
     return comments;
   }
+
+  static async getGif(gifId) {
+    const query = `
+    SELECT
+    id as commentid,
+    employeeid as authorid,
+    comment
+    FROM comments_gifs 
+    WHERE gifid = $1
+   `;
+    const param = [gifId];
+    const comments = await DB.query(query, param, true).catch((err) => {
+      throw new ErrorHandler(err.message, 400);
+    });
+    return comments;
+  }
 }
