@@ -94,7 +94,7 @@ describe('ARTICLE TESTS', () => {
         .auth(newEmployee.token, { type: 'bearer' })
         .then((res) => {
           const { data } = res.body;
-          expect(data).to.have.property('articleid');
+          expect(data).to.have.property('id');
           expect(data).have.property('comments');
           expect(data.comments).to.be.an('array');
           done();

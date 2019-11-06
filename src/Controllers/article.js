@@ -22,7 +22,7 @@ export default class ArticleController {
   static async edit(req, res, next) {
     try {
       const articleCheck = await Article.get(req.params.articleId);
-      if (articleCheck.employeeid !== req.user.userId) {
+      if (articleCheck.id !== req.user.userId) {
         throw new ErrorHandler(
           "You don't have permission to edit this article",
           403,
@@ -31,7 +31,7 @@ export default class ArticleController {
       const article = await Article.edit(
         req.user.userId,
         req.body,
-        articleCheck.articleid,
+        articleCheck.id,
       );
       const message = 'Article successfully updated';
       const data = { message, ...article };
@@ -44,13 +44,13 @@ export default class ArticleController {
   static async delete(req, res, next) {
     try {
       const article = await Article.get(req.params.articleId);
-      if (article.employeeid !== req.user.userId) {
+      if (article.authorid !== req.user.userId) {
         throw new ErrorHandler(
           "You don't have permission to delete this article",
           403,
         );
       }
-      await Article.delete(req.user.userId, article.articleid);
+      await Article.delete(req.user.userId, article.id);
       const data = { message: 'Article successfully deleted' };
       FeedbackHandler.success(res, 200, data);
     } catch (error) {
@@ -71,7 +71,7 @@ export default class ArticleController {
   static async get(req, res, next) {
     try {
       const article = await Article.get(req.params.articleId);
-      const response = await Comment.get(article.articleid);
+      const response = await Comment.get(article.id);
       const comments = [...response];
       const data = { ...article, comments };
       FeedbackHandler.success(res, 200, data);

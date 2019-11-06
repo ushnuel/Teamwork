@@ -9,7 +9,7 @@ export default class CommentController {
       const article = await Article.get(req.params.articleId);
       const comment = await Comment.createArticle(
         req.body,
-        article.articleid,
+        article.id,
         req.user.userId,
       );
       const message = 'Comment successfully created';
@@ -30,7 +30,7 @@ export default class CommentController {
       const gif = await Gif.get(req.params.gifId);
       const comment = await Comment.createGif(
         req.body,
-        gif.gifid,
+        gif.id,
         req.user.userId,
       );
       const message = 'Comment successfully created';
