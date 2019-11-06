@@ -13,7 +13,10 @@ export default class Employee {
     address,
     gender,
   }) {
-    const query = `INSERT INTO employees (firstName, lastName, jobRole, email, password, department, address, gender)
+    const query = `
+    INSERT 
+    INTO 
+    employees (firstName, lastName, jobRole, email, password, department, address, gender)
     VALUES($1,$2,$3,$4,$5,$6,$7,$8)
     RETURNING *`;
     const encryptedPswd = await bcrypt.hash(password, 10);
@@ -34,23 +37,16 @@ export default class Employee {
     return employee;
   }
 
-  static async signInEmployee({ email, password }) {
-    const query = `SELECT * FROM employees
+  static async getEmployeeEmail(email) {
+    const query = `
+    SELECT 
+    * 
+    FROM employees
     WHERE email = $1`;
     const param = [email];
     const employee = await DB.query(query, param).catch((err) => {
       throw new ErrorHandler(err.message, 400);
     });
-    if (!employee) {
-      throw new ErrorHandler(
-        `Employee with email ${email} does not exist`,
-        404,
-      );
-    }
-    const passwordMatched = await bcrypt.compare(password, employee.password);
-    if (!passwordMatched) {
-      throw new ErrorHandler('Passwords do not match', 404);
-    }
     return employee;
   }
 }
