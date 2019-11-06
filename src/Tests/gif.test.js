@@ -24,7 +24,6 @@ describe('GIF TESTS', () => {
       .send(employee)
       .then((res) => {
         const { data } = res.body;
-        newEmployee.id = data.userId;
         newEmployee.token = data.token;
         done();
       })
@@ -34,14 +33,12 @@ describe('GIF TESTS', () => {
   describe('POST /gifs', () => {
     it('Employees can create and share gif with colleaques', (done) => {
       const file = fs.readFileSync(gifPost.imagePath);
-      post.employeeID = newEmployee.id;
       chai
         .request(server)
         .post(`${route}/gifs`)
         .auth(newEmployee.token, { type: 'bearer' })
         .set('Content-Type', 'application/x-www-form-urlencoded')
         .field('title', post.title)
-        .field('employeeID', post.employeeID)
         .attach('image', file, 'giphy.gif')
         .then((res) => {
           const { data } = res.body;
@@ -58,14 +55,12 @@ describe('GIF TESTS', () => {
 
     it('throw error if image is not in gif format', (done) => {
       const file = fs.readFileSync(gifPost.incorrectImagePath);
-      post.employeeID = newEmployee.id;
       chai
         .request(server)
         .post(`${route}/gifs`)
         .auth(newEmployee.token, { type: 'bearer' })
         .set('Content-Type', 'application/x-www-form-urlencoded')
         .field('title', post.title)
-        .field('employeeID', post.employeeID)
         .attach('image', file, 'jpeg.jpg')
         .then((res) => {
           expect(res.body).have.property('error');

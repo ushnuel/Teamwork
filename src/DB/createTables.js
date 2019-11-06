@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import DB from '.';
 
-const dropTablesCommentsArticles =  'DROP TABLE IF EXISTS comments_articles CASCADE';
+const dropCommentsArticles = 'DROP TABLE IF EXISTS comments_articles CASCADE';
 const createTableCommentsArticles = `CREATE TABLE comments_articles(
   id bigserial NOT NULL,
   employeeID bigserial,
@@ -73,7 +73,7 @@ class CreateTables {
     await DB.query(dropTablesArticles);
     await DB.query(dropTablesGifs);
     await DB.query(dropTablesCommentsGifs);
-    await DB.query(dropTablesCommentsArticles);
+    await DB.query(dropCommentsArticles);
 
     await DB.query(createTableEmployees);
     await DB.query(createTableGifs);

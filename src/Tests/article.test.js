@@ -24,7 +24,6 @@ describe('ARTICLE TESTS', () => {
       .send(employee)
       .then((res) => {
         const { data } = res.body;
-        newEmployee.id = data.id;
         newEmployee.token = data.token;
         done();
       })
@@ -33,7 +32,6 @@ describe('ARTICLE TESTS', () => {
 
   describe('POST /articles', () => {
     it('Employees can create and/or share articles with colleaques', (done) => {
-      article.employeeID = newEmployee.id;
       chai
         .request(server)
         .post(`${route}/articles`)
@@ -85,6 +83,23 @@ describe('ARTICLE TESTS', () => {
           done();
         })
         .catch(error => done(error));
+    });
+  });
+
+  describe('GET articles/:articleId', () => {
+    it('Employees can view a specific article and its comments(if any)', (done) => {
+      chai
+        .request(server)
+        .get(`${route}/articles/${newArticle.id}`)
+        .auth(newEmployee.token, { type: 'bearer' })
+        .then((res) => {
+          const { data } = res.body;
+          expect(data).to.have.property('articleid');
+          expect(data).have.property('comments');
+          expect(data.comments).to.be.an('array');
+          done();
+        })
+        .catch(err => done(err));
     });
   });
 
