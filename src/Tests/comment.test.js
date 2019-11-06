@@ -30,7 +30,6 @@ describe('EMPLOYEE COMMENT TESTS', () => {
       .send(employee)
       .then((res) => {
         const { data } = res.body;
-        newEmployee.id = data.userId;
         newEmployee.token = data.token;
       })
       .then(() => {
@@ -47,14 +46,12 @@ describe('EMPLOYEE COMMENT TESTS', () => {
       })
       .then(() => {
         const file = fs.readFileSync(gifPost.imagePath);
-        post.employeeID = newEmployee.id;
         chai
           .request(server)
           .post(`${route}/gifs`)
           .auth(newEmployee.token, { type: 'bearer' })
           .set('Content-Type', 'application/x-www-form-urlencoded')
           .field('title', post.title)
-          .field('employeeID', post.employeeID)
           .attach('image', file, 'giphy.gif')
           .then((res) => {
             const { data } = res.body;
@@ -68,8 +65,6 @@ describe('EMPLOYEE COMMENT TESTS', () => {
 
   describe('POST /articles/articleId/comment', () => {
     it('Employees can comment on an article', (done) => {
-      comment.employeeID = newEmployee.id;
-      comment.articleID = newArticle.id;
       chai
         .request(server)
         .post(`${route}/articles/${newArticle.id}/comment`)
@@ -92,8 +87,6 @@ describe('EMPLOYEE COMMENT TESTS', () => {
 
   describe('POST /gifs/gifId/comment', () => {
     it('Employees can comment on a gif post', (done) => {
-      comment.employeeID = newEmployee.id;
-      comment.gifID = newGif.id;
       chai
         .request(server)
         .post(`${route}/gifs/${newGif.id}/comment`)

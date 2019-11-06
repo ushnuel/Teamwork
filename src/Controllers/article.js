@@ -1,5 +1,6 @@
 import Article from '../Models/article';
 import { FeedbackHandler, ErrorHandler } from '../Helpers';
+import Comment from '../Models/comment';
 
 export default class ArticleController {
   static async create(req, res, next) {
@@ -61,6 +62,18 @@ export default class ArticleController {
     try {
       const articles = await Article.feed();
       const data = [...articles];
+      FeedbackHandler.success(res, 200, data);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  static async get(req, res, next) {
+    try {
+      const article = await Article.get(req.params.articleId);
+      const response = await Comment.get(article.articleid);
+      const comments = [...response];
+      const data = { ...article, comments };
       FeedbackHandler.success(res, 200, data);
     } catch (error) {
       next(error);
