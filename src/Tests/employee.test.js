@@ -52,6 +52,22 @@ describe('EMPLOYEE AUTHENTICATION TEST', () => {
         })
         .catch(err => done(err));
     });
+
+    it('throw error if employee email already exists', (done) => {
+      chai
+        .request(server)
+        .post(`${route}/create-user`)
+        .send(employee)
+        .then((res) => {
+          const { status, error } = res.body;
+          expect(status).to.eql('error');
+          expect(error).to.be.eql(
+            `Employee with email ${employee.email.toUpperCase()} already exists`,
+          );
+          done();
+        })
+        .catch(err => done(err));
+    });
   });
 
   describe('Sign in feature', () => {

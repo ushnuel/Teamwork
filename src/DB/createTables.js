@@ -64,7 +64,8 @@ const createTableEmployees = `CREATE TABLE employees(
   password character varying NOT NULL,
   department character varying (100),
   address character varying,
-  CONSTRAINT employee_pkey PRIMARY KEY(id)
+  CONSTRAINT employee_pkey PRIMARY KEY(id),
+  CONSTRAINT employee_email UNIQUE(email)
 )`;
 
 class CreateTables {
