@@ -18,5 +18,6 @@ switch (process.env.NODE_ENV) {
 }
 config.JWT_SECRET = process.env.JWT_SECRET;
 config.CLOUDINARY = process.env.CLOUDINARY_URL;
+config.ADMIN = process.env.ADMIN;
 
 export default config;

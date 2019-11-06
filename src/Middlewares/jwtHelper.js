@@ -36,9 +36,11 @@ export default class JWT {
   }
 
   static authorizeAdmin(req, res, next) {
-    const { status } = req.user;
-    if (status !== 'admin') {
-      next(new ErrorHandler('Unauthorized access', 403));
+    const { jobRole } = req.body;
+    if (jobRole.toLowerCase() !== config.ADMIN) {
+      next(
+        new ErrorHandler('Unauthorized access: Only admins are permitted', 403),
+      );
     } else {
       next();
     }
