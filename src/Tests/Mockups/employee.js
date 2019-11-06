@@ -5,7 +5,7 @@ class Employee {
       lastName: 'Chinazom',
       email: 'ezeemmanuel2010@gmail.com',
       password: 'adminPassword',
-      jobRole: 'Admin',
+      jobRole: 'admin@20_@',
       gender: 'Male',
       department: 'Management',
       address: 'Lambe street, Lagos',
@@ -19,6 +19,13 @@ class Employee {
     this.invalidEmployee = {
       email: 'invaliduser@gmail.com',
       password: 'invalidpassword',
+    };
+
+    this.notAdmin = {
+      firstName: 'Chinazom',
+      email: 'notAdmin@gmail.com',
+      password: 'notadmin',
+      jobRole: 'Engineer',
     };
   }
 }

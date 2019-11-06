@@ -56,10 +56,10 @@ const createTableArticles = `CREATE TABLE articles(
 const dropTableEmployees = 'DROP TABLE IF EXISTS employees CASCADE';
 const createTableEmployees = `CREATE TABLE employees(
   id bigserial NOT NULL,
-  firstName character varying(50) NOT NULL,
+  firstName character varying(50),
   lastName character varying(50),
   gender character varying (15),
-  jobRole character varying (60),
+  jobRole character varying (60) NOT NULL,
   email character varying (100) NOT NULL,
   password character varying NOT NULL,
   department character varying (100),

@@ -7,7 +7,7 @@ export default class EmployeeController {
     try {
       const employee = await Employee.create(req.body);
       const payload = {
-        status: employee.jobrole.toLowerCase(),
+        status: employee.jobrole,
         email: employee.email,
         userId: employee.id,
       };
