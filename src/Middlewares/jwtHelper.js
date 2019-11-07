@@ -36,13 +36,43 @@ export default class JWT {
   }
 
   static authorizeAdmin(req, res, next) {
-    const { jobRole } = req.body;
-    if (jobRole.toLowerCase() !== config.ADMIN) {
-      next(
-        new ErrorHandler('Unauthorized access: Only admins are permitted', 403),
-      );
+    if (req.user) {
+      const { status } = req.user;
+      if (status !== config.ADMIN) {
+        next(
+          new ErrorHandler(
+            'Unauthorized access: Only admins are permitted',
+            403,
+          ),
+        );
+      } else {
+        next();
+      }
     } else {
       next();
+    }
+  }
+
+  static hasAccount(req, res, next) {
+    if (!req.headers.authorization) {
+      next();
+      return;
+    }
+    const token = req.headers.authorization.split(' ')[1];
+    try {
+      if (token) {
+        jwt.verify(token, config.JWT_SECRET, (err, decoded) => {
+          if (err) {
+            throw new ErrorHandler('Invalid authorization token', 401);
+          }
+          req.user = decoded;
+          next();
+        });
+      } else {
+        throw new ErrorHandler('Authentication failed: No token provided', 401);
+      }
+    } catch (error) {
+      next(error);
     }
   }
 }

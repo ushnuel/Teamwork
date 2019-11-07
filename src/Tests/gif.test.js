@@ -6,12 +6,10 @@ import fs from 'fs';
 
 import server from '..';
 import Gif from './Mockups/gif';
-import Employee from './Mockups/employee';
 
 chai.use(chaiHttp);
 should();
 const { gifPost, post } = new Gif();
-const { employee } = new Employee();
 const route = '/api/v1';
 const newEmployee = {};
 const newGif = {};
@@ -21,7 +19,11 @@ describe('GIF TESTS', () => {
     chai
       .request(server)
       .post(`${route}/auth/create-user`)
-      .send(employee)
+      .send({
+        email: 'gifemployee@gmail.com',
+        password: 'gifemployee',
+        jobRole: 'admin',
+      })
       .then((res) => {
         const { data } = res.body;
         newEmployee.token = data.token;
@@ -133,22 +135,6 @@ describe('GIF TESTS', () => {
           done();
         })
         .catch(err => done(err));
-    });
-
-    it('Throw error if there are no gif post present in the database', (done) => {
-      chai
-        .request(server)
-        .get(`${route}/gifs/feed`)
-        .auth(newEmployee.token, { type: 'bearer' })
-        .then((res) => {
-          const { error, status } = res.body;
-          expect(status).to.eql('error');
-          expect(error).to.be.eql(
-            'There are no gif posts available. Create one now!',
-          );
-          done();
-        })
-        .catch(error => done(error));
     });
   });
 });

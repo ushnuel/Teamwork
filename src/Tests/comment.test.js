@@ -5,14 +5,12 @@ import fs from 'fs';
 
 import server from '..';
 import Article from './Mockups/article';
-import Employee from './Mockups/employee';
 import Comment from './Mockups/comment';
 import Gif from './Mockups/gif';
 
 chai.use(chaiHttp);
 should();
 
-const { employee } = new Employee();
 const { article } = new Article();
 const { comment } = new Comment();
 const { post, gifPost } = new Gif();
@@ -27,7 +25,11 @@ describe('EMPLOYEE COMMENT TESTS', () => {
     chai
       .request(server)
       .post(`${route}/auth/create-user`)
-      .send(employee)
+      .send({
+        email: 'employeecomment@gmail.com',
+        password: 'employeecomment',
+        jobRole: 'admin',
+      })
       .then((res) => {
         const { data } = res.body;
         newEmployee.token = data.token;

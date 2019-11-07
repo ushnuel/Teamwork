@@ -1,11 +1,15 @@
 import Comment from '../Models/comment';
 import Article from '../Models/article';
-import { FeedbackHandler } from '../Helpers';
+import { FeedbackHandler, ErrorHandler, InputValidation } from '../Helpers';
 import Gif from '../Models/gif';
 
 export default class CommentController {
   static async createArticleComment(req, res, next) {
     try {
+      const error = InputValidation(req);
+      if (error) {
+        throw new ErrorHandler(error, 422);
+      }
       const article = await Article.get(req.params.articleId);
       const comment = await Comment.createArticle(
         req.body,
@@ -27,6 +31,10 @@ export default class CommentController {
 
   static async createGifComment(req, res, next) {
     try {
+      const error = InputValidation(req);
+      if (error) {
+        throw new ErrorHandler(error, 422);
+      }
       const gif = await Gif.get(req.params.gifId);
       const comment = await Comment.createGif(
         req.body,

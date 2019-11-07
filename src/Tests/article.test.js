@@ -5,12 +5,10 @@ import chaiHttp from 'chai-http';
 
 import server from '..';
 import Article from './Mockups/article';
-import Employee from './Mockups/employee';
 
 chai.use(chaiHttp);
 should();
 
-const { employee } = new Employee();
 const { article, editedArticle } = new Article();
 const route = '/api/v1';
 const newEmployee = {};
@@ -21,7 +19,11 @@ describe('ARTICLE TESTS', () => {
     chai
       .request(server)
       .post(`${route}/auth/create-user`)
-      .send(employee)
+      .send({
+        email: 'articleemployee@gmail.com',
+        password: 'articleemployee',
+        jobRole: 'Doctor',
+      })
       .then((res) => {
         const { data } = res.body;
         newEmployee.token = data.token;

@@ -7,7 +7,7 @@ const router = Router();
 const storage = multer.memoryStorage();
 const uploadImage = multer({ storage }).single('image');
 
-router.post('/', uploadImage, cloudinary.upload, GifController.post);
+router.post('/', uploadImage, cloudinary.upload, GifController.createGif);
 router.get('/feed', GifController.feed);
 router.delete('/:gifId', GifController.delete);
 router.get('/:gifId', GifController.get);
