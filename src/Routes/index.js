@@ -9,7 +9,7 @@ const router = Router();
 
 router.use('/auth', EmployeeRoute);
 router.use('/gifs', Jwt.authorize, GifRoute);
-router.use('/articles', Jwt.authorize, ArticleRoute);
-router.use('/', Jwt.authorize, CommentRoute);
+router.use('/articles', ArticleRoute);
+router.use('/', CommentRoute);
 
 export default router;

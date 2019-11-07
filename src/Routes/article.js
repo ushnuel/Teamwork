@@ -1,11 +1,17 @@
 import { Router } from 'express';
 import ArticleController from '../Controllers/article';
+import { Jwt, InputValidator } from '../Middlewares';
 
 const router = Router();
-router.post('/', ArticleController.create);
-router.get('/feed', ArticleController.feed);
-router.patch('/:articleId', ArticleController.edit);
-router.delete('/:articleId', ArticleController.delete);
-router.get('/:articleId', ArticleController.get);
+router.post(
+  '/',
+  InputValidator.Validate('createArticle'),
+  Jwt.authorize,
+  ArticleController.createArticle,
+);
+router.get('/feed', Jwt.authorize, ArticleController.feed);
+router.patch('/:articleId', Jwt.authorize, ArticleController.edit);
+router.delete('/:articleId', Jwt.authorize, ArticleController.delete);
+router.get('/:articleId', Jwt.authorize, ArticleController.get);
 
 export default router;

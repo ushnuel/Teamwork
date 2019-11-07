@@ -1,10 +1,14 @@
 import Gif from '../Models/gif';
 import Comment from '../Models/comment';
-import { FeedbackHandler, ErrorHandler } from '../Helpers';
+import { FeedbackHandler, ErrorHandler, InputValidation } from '../Helpers';
 
 export default class GifController {
-  static async post(req, res, next) {
+  static async createGif(req, res, next) {
     try {
+      const error = InputValidation(req);
+      if (error) {
+        throw new ErrorHandler(error, 422);
+      }
       const gif = await Gif.create(
         req.body.title,
         req.body.image_url,

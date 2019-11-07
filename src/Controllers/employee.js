@@ -1,11 +1,15 @@
 import bcrypt from 'bcrypt';
 import Employee from '../Models/employee';
 import JWT from '../Middlewares/jwtHelper';
-import { FeedbackHandler, ErrorHandler } from '../Helpers';
+import { FeedbackHandler, ErrorHandler, InputValidation } from '../Helpers';
 
 export default class EmployeeController {
-  static async create(req, res, next) {
+  static async signUp(req, res, next) {
     try {
+      const error = InputValidation(req);
+      if (error) {
+        throw new ErrorHandler(error, 422);
+      }
       const newEmployee = await Employee.getEmployeeEmail(req.body.email);
       if (newEmployee) {
         throw new ErrorHandler(
@@ -30,10 +34,11 @@ export default class EmployeeController {
   static async signIn(req, res, next) {
     const { email, password } = req.body;
     try {
-      const employee = await Employee.getEmployeeEmail(email);
-      if (!email || !password) {
-        throw new ErrorHandler('Invalid email address or password', 400);
+      const error = InputValidation(req);
+      if (error) {
+        throw new ErrorHandler(error, 422);
       }
+      const employee = await Employee.getEmployeeEmail(email);
       if (!employee) {
         throw new ErrorHandler('Operation failed: Email does not exist', 404);
       }

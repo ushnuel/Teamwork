@@ -1,10 +1,14 @@
 import Article from '../Models/article';
-import { FeedbackHandler, ErrorHandler } from '../Helpers';
+import { FeedbackHandler, ErrorHandler, InputValidation } from '../Helpers';
 import Comment from '../Models/comment';
 
 export default class ArticleController {
-  static async create(req, res, next) {
+  static async createArticle(req, res, next) {
     try {
+      const error = InputValidation(req);
+      if (error) {
+        throw new ErrorHandler(error, 422);
+      }
       const article = await Article.create(req.body, req.user.userId);
       const message = 'Article successfully posted';
       const returnedFields = ArticleController.removeField(article);
