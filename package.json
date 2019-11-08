@@ -6,7 +6,8 @@
   "scripts": {
     "start-dev": "set NODE_ENV=dev&&babel-watch ./src",
     "pretest": "node --require @babel/register --require @babel/polyfill ./src/DB/createTables.js",
-    "test": "mocha --timeout 20000 --require @babel/register --require @babel/polyfill --exit ./src/Tests/*.test.js"
+    "test": "nyc --reporter=text mocha --timeout 20000 --require @babel/register --require @babel/polyfill --exit ./src/Tests/*.test.js",
+    "coverage": "npm test && nyc report coveralls"
   },
   "repository": {
     "type": "git",
