@@ -6,6 +6,8 @@ install:
   - npm install
 services:
   - postgresql
+notifications:
+  email: false
 before_script:
   - psql -c 'create database travis_test_db;' -U postgres
 script:
