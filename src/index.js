@@ -30,8 +30,9 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(morgan('dev'));
 app.use('/api/v1', Routes);
 
+const url = 'https://teamwork-dev-app.herokuapp.com/api-docs';
 app.get('/', (req, res) => res.json({
-    message: 'Welcome to Warefarer server API homepage',
+    message: `Welcome to Teamwork server API homepage. Visit our documentation page on ${url}`,
   }),);
 
 app.use('*', (req, res, next) => {
