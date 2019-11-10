@@ -19,7 +19,7 @@
   "servers": [
     {
       "description": "Production server",
-      "url": "https://Teamwork.herokuapp.com/api/v1"
+      "url": "https://teamwork-dev-app.herokuapp.com/api/v1"
     },
     {
       "description": "Development server",
