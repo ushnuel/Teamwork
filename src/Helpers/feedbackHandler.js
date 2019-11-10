@@ -10,7 +10,6 @@ export default class FeedbackHandler {
   static error(err, req, res, next) {
     const { status = 400, message } = err;
     const error = message;
-    console.log('Error', error);
     res.status(status).json({
       status: 'error',
       error,

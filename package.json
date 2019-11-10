@@ -4,7 +4,7 @@
   "description": "Teamwork is an internal social network for employees of an organization. The goal of this\r application is to facilitate more interaction between colleagues and promote team bonding.",
   "main": "index.js",
   "scripts": {
-    "start-dev": "set NODE_ENV=dev&&babel-watch ./src",
+    "start-dev": "set NODE_ENV=dev&&set DEBUG=http&&babel-watch ./src",
     "pretest": "node --require @babel/register --require @babel/polyfill ./src/DB/createTables.js",
     "test": "nyc --reporter=text mocha --timeout 20000 --require @babel/register --require @babel/polyfill --exit ./src/Tests/*.test.js",
     "coverage": "nyc npm test && nyc report --reporter=text-lcov | coveralls"
@@ -30,12 +30,15 @@
     "cloudinary": "^1.16.0",
     "cors": "^2.8.5",
     "datauri": "^2.0.0",
+    "debug": "^4.1.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-validator": "^6.2.0",
     "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.9.1",
     "multer": "^1.4.2",
-    "pg": "^7.12.1"
+    "pg": "^7.12.1",
+    "swagger-ui-express": "^4.1.2"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.6.3",
