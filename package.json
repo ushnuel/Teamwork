@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start-dev": "set NODE_ENV=dev&&set DEBUG=http&&babel-watch ./src",
+    "build": "babel ./src --out-dir ./dist",
+    "start": "set NODE_ENV=prod&&node ./dist",
     "pretest": "node --require @babel/register --require @babel/polyfill ./src/DB/createTables.js",
     "test": "nyc --reporter=text mocha --timeout 20000 --require @babel/register --require @babel/polyfill --exit ./src/Tests/*.test.js",
     "coverage": "nyc npm test && nyc report --reporter=text-lcov | coveralls"
@@ -41,6 +43,7 @@
     "swagger-ui-express": "^4.1.2"
   },
   "devDependencies": {
+    "@babel/cli": "^7.7.0",
     "@babel/preset-env": "^7.6.3",
     "@babel/register": "^7.6.2",
     "babel-watch": "^7.0.0",
