@@ -1,0 +1,748 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "version": "1.0.0",
+    "title": "Teamwork application API documentation",
+    "description": "Teamwork is an internal social network for employees of an organization. The goal of this application is to facilitate more interaction between colleagues and promote team bonding. More info on [github](https://github.com/ushnuel/Teamwork)",
+    "contact": [
+      {
+        "name": "Emmanuel chinazom",
+        "email": "ezeemmanuel2010@gmail.com"
+      }
+    ],
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "basePath": "/api/v1",
+  "servers": [
+    {
+      "description": "Production server",
+      "url": "https://Teamwork.herokuapp.com/api/v1"
+    },
+    {
+      "description": "Development server",
+      "url": "http://localhost:3000/api/v1"
+    }
+  ],
+  "tags": [
+    {
+      "name": "employees",
+      "description": "Employees working in an organization"
+    },
+    {
+      "name": "gifs",
+      "description": "Gif posts created by employees"
+    },
+    {
+      "name": "articles",
+      "description": "Articles written by employees"
+    },
+    {
+      "name": "comments",
+      "description": "Comments on gif or articles posts, by an employee"
+    }
+  ],
+  "security": [
+    {
+      "Bearer": []
+    }
+  ],
+  "paths": {
+    "/auth/create-user": {
+      "post": {
+        "summary": "Create new user",
+        "tags": ["employees"],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "User account successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Employees"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/response/400ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/response/404ErrorResponse"
+          }
+        },
+
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserBodyRequest"
+        }
+      }
+    },
+    "/auth/signin": {
+      "post": {
+        "tags": ["employees"],
+        "summary": "Sign in user",
+        "security": [],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/UserSignIn"
+        },
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Employees"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/response/400ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/response/404ErrorResponse"
+          }
+        }
+      }
+    },
+    "/articles": {
+      "post": {
+        "tags": ["articles"],
+        "summary": "Employee can create an article",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArticleBodyRequest"
+        },
+        "responses": {
+          "201": {
+            "description": "Article successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Articles"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/response/400ErrorResponse"
+          },
+          "401": {
+            "$ref": "#/components/response/404ErrorResponse"
+          }
+        }
+      },
+      "get": {
+        "tags": ["articles"],
+        "summary": "Employees can view all articles",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/json": {
+                "$ref": "#/components/requestBodies/ArticlesArray"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/response/400ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/response/404ErrorResponse"
+          }
+        }
+      }
+    },
+    "/articles/{articleId}": {
+      "patch": {
+        "tags": ["articles"],
+        "summary": "Edit an article",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/ArticleBodyRequest"
+        },
+        "parameters": [
+          {
+            "in": "path",
+            "name": "articleId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Article successfully updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Articles"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/response/400ErrorResponse"
+          },
+          "401": {
+            "$ref": "#/components/response/401ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/response/404ErrorResponse"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["articles"],
+        "summary": "Employee delete an article he/she created",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "articleId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Article successfully deleted"
+          },
+          "400": {
+            "$ref": "#/components/response/400ErrorResponse"
+          },
+          "401": {
+            "$ref": "#/components/response/401ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/response/404ErrorResponse"
+          }
+        }
+      },
+      "get": {
+        "tags": ["articles"],
+        "summary": "Employee can view a specific article",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "articleId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/requestBodies/ArticleBodyRequest"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/response/400ErrorResponse"
+          },
+          "401": {
+            "$ref": "#/components/response/401ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/response/404ErrorResponse"
+          }
+        }
+      }
+    },
+    "/articles/{articleId}/comment": {
+      "post": {
+        "tags": ["comments"],
+        "summary": "Employee can comment on an article",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "articleId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CommentArticle"
+        },
+        "responses": {
+          "201": {
+            "description": "Comment successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentArticle"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/response/400ErrorResponse"
+          },
+          "401": {
+            "$ref": "#/components/response/401ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/response/404ErrorResponse"
+          }
+        }
+      }
+    },
+    "/gifs/{gifId}/comment": {
+      "post": {
+        "tags": ["comments"],
+        "summary": "Employee can comment on a gif post",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "gifId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/CommentGif"
+        },
+        "responses": {
+          "201": {
+            "description": "Comment successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentGif"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/response/400ErrorResponse"
+          },
+          "401": {
+            "$ref": "#/components/response/401ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/response/404ErrorResponse"
+          }
+        }
+      }
+    },
+    "/gifs": {
+      "post": {
+        "summary": "Employee creates a new gifs",
+        "tags": ["gifs"],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "requestBody": {
+          "$ref": "#/components/requestBodies/GifsBody"
+        },
+        "responses": {
+          "201": {
+            "description": "GIF image successfully posted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Gifs"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/response/400ErrorResponse"
+          },
+          "401": {
+            "$ref": "#/components/response/401ErrorResponse"
+          }
+        }
+      }
+    },
+    "/gifs/{gifId}": {
+      "get": {
+        "tags": ["gifs"],
+        "summary": "Employee can view a specific gif post",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "gifId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Gifs"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/response/400ErrorResponse"
+          },
+          "401": {
+            "$ref": "#/components/response/401ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/response/404ErrorResponse"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["gifs"],
+        "summary": "Employee delete a gif post he/she created",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "gifId",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Article successfully deleted"
+          },
+          "400": {
+            "$ref": "#/components/response/400ErrorResponse"
+          },
+          "401": {
+            "$ref": "#/components/response/401ErrorResponse"
+          },
+          "404": {
+            "$ref": "#/components/response/404ErrorResponse"
+          }
+        }
+      }
+    }
+  },
+
+  "components": {
+    "schemas": {
+      "Employees": {
+        "type": "object",
+        "required": ["email", "password", "jobRole"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "uniqueItems": true,
+            "example": "ezeemmanuel2010@gmail.com"
+          },
+          "lastname": {
+            "type": "string"
+          },
+          "firstname": {
+            "type": "string"
+          },
+          "jobRole": {
+            "type": "string",
+            "example": "admin"
+          },
+          "department": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "gender": {
+            "type": "string"
+          }
+        }
+      },
+      "Articles": {
+        "type": "object",
+        "required": ["title", "article"],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "article": {
+            "type": "string"
+          }
+        }
+      },
+      "CommentArticle": {
+        "type": "object",
+        "required": ["comment"],
+        "properties": {
+          "comment": {
+            "type": "string"
+          }
+        }
+      },
+      "CommentGif": {
+        "type": "object",
+        "required": ["comment"],
+        "properties": {
+          "comment": {
+            "type": "string"
+          }
+        }
+      },
+      "Gifs": {
+        "type": "object",
+        "required": ["title", "image"],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string",
+            "format": "binary"
+          }
+        }
+      }
+    },
+
+    "requestBodies": {
+      "ExistingUser": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string",
+            "format": "password"
+          }
+        }
+      },
+      "UserSignIn": {
+        "content": {
+          "application/x-www-form-urlencoded": {
+            "schema": {
+              "$ref": "#/components/requestBodies/ExistingUser"
+            }
+          },
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Employees"
+            }
+          }
+        }
+      },
+      "Employee": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Employees"
+          },
+          {
+            "properties": {
+              "password": {
+                "type": "string",
+                "format": "password"
+              }
+            }
+          }
+        ]
+      },
+      "UserBodyRequest": {
+        "content": {
+          "application/x-www-form-urlencoded": {
+            "schema": {
+              "$ref": "#/components/requestBodies/Employee"
+            }
+          },
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Employees"
+            }
+          }
+        }
+      },
+      "ArticleBodyRequest": {
+        "content": {
+          "application/x-www-form-urlencoded": {
+            "schema": {
+              "$ref": "#/components/schemas/Articles"
+            }
+          },
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Articles"
+            }
+          }
+        }
+      },
+      "CommentArticle": {
+        "content": {
+          "application/x-www-form-urlencoded": {
+            "schema": {
+              "$ref": "#/components/schemas/CommentArticle"
+            }
+          },
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CommentArticle"
+            }
+          }
+        }
+      },
+      "CommentGif": {
+        "content": {
+          "application/x-www-form-urlencoded": {
+            "schema": {
+              "$ref": "#/components/schemas/CommentGif"
+            }
+          },
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/CommentGif"
+            }
+          }
+        }
+      },
+      "GifsBody": {
+        "content": {
+          "multipart/form-data": {
+            "schema": {
+              "$ref": "#/components/schemas/Gifs"
+            }
+          }
+        }
+      },
+      "ArticlesArray": {
+        "type": "array",
+        "properties": {
+          "schema": {
+            "$ref": "#/components/schemas/Articles"
+          }
+        }
+      }
+    },
+
+    "response": {
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string"
+          },
+          "error": {
+            "type": "string"
+          }
+        }
+      },
+      "404ErrorResponse": {
+        "description": "Resource Not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/response/ErrorResponse"
+            }
+          }
+        }
+      },
+      "403ErrorResponse": {
+        "description": "Forbidden access",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/response/ErrorResponse"
+            }
+          }
+        }
+      },
+      "400ErrorResponse": {
+        "description": "Bad request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/response/ErrorResponse"
+            }
+          }
+        }
+      },
+      "401ErrorResponse": {
+        "description": "Unauthorized access",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/response/ErrorResponse"
+            }
+          }
+        }
+      }
+    },
+
+    "securitySchemes": {
+      "Bearer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
