@@ -42,16 +42,6 @@ export default class GifController {
     }
   }
 
-  static async feed(req, res, next) {
-    try {
-      const gifs = await Gif.feed();
-      const data = [...gifs];
-      FeedbackHandler.success(res, 200, data);
-    } catch (error) {
-      next(error);
-    }
-  }
-
   static async get(req, res, next) {
     try {
       const gif = await Gif.get(req.params.gifId);

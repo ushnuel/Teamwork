@@ -69,18 +69,6 @@ describe('GIF TESTS', () => {
     });
   });
 
-  describe('GET gifs/feed', () => {
-    it('Employees can view all gif posts', (done) => {
-      utils
-        .get('/api/v1/gifs/feed', newEmployee.token)
-        .then((res) => {
-          Test.feed(res);
-          done();
-        })
-        .catch(error => done(error));
-    });
-  });
-
   describe('DELETE gifs/:gifId', () => {
     it('Employees can delete their gif posts', (done) => {
       utils

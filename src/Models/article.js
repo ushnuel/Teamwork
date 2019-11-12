@@ -78,7 +78,7 @@ export default class Article {
     employeeid AS authorId
     FROM articles
     ORDER BY 
-    createdon DESC`;
+    articleid DESC`;
     const articles = await DB.query(query, '', true).catch((err) => {
       throw new ErrorHandler(err.message, 400);
     });
