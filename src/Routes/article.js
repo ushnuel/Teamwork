@@ -9,7 +9,6 @@ router.post(
   Jwt.authorize,
   ArticleController.createArticle,
 );
-router.get('/feed', Jwt.authorize, ArticleController.feed);
 router.patch('/:articleId', Jwt.authorize, ArticleController.edit);
 router.delete('/:articleId', Jwt.authorize, ArticleController.delete);
 router.get('/:articleId', Jwt.authorize, ArticleController.get);

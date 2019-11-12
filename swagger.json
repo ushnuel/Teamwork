@@ -143,7 +143,7 @@
         }
       }
     },
-    "/articles/feed": {
+    "/feed": {
       "get": {
         "tags": ["articles"],
         "summary": "Employees can view all articles",
@@ -408,34 +408,6 @@
           },
           "401": {
             "$ref": "#/components/response/401ErrorResponse"
-          }
-        }
-      }
-    },
-    "/gifs/feed": {
-      "get": {
-        "tags": ["gifs"],
-        "summary": "Employees can view all gif",
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "produces": ["application/json"],
-        "responses": {
-          "200": {
-            "description": "ok",
-            "content": {
-              "application/json": {
-                "$ref": "#/components/requestBodies/GifsArray"
-              }
-            }
-          },
-          "400": {
-            "$ref": "#/components/response/400ErrorResponse"
-          },
-          "404": {
-            "$ref": "#/components/response/404ErrorResponse"
           }
         }
       }
