@@ -1,31 +1,23 @@
 import { describe, it } from 'mocha';
-import chai, { expect, should } from 'chai';
-import chaiHttp from 'chai-http';
-
 import server from '..';
 import Employee from './Mockups/employee';
+import Utils from './Utils';
+import Test from './chaiHelpers';
 
 const nonAdmin = {};
 const admin = {};
-
-chai.use(chaiHttp);
-should();
 const { employee, validEmployee, invalidEmployee } = new Employee();
-const route = '/api/v1/auth';
+const utils = new Utils(server);
 
 describe('EMPLOYEE AUTHENTICATION TEST', () => {
   describe('Create User Account', () => {
+    const route = '/api/v1/auth/create-user';
     it('Create an admin account', (done) => {
-      chai
-        .request(server)
-        .post(`${route}/create-user`)
-        .send(employee)
+      utils
+        .createUser(employee, route)
         .then((res) => {
+          Test.employee(res);
           const { data } = res.body;
-          expect(data).to.have.property('token');
-          expect(data).to.have.property('userId');
-          const { message } = data;
-          expect(message).to.be.eql('User account successfully created');
           admin.token = data.token;
           done();
         })
@@ -33,20 +25,16 @@ describe('EMPLOYEE AUTHENTICATION TEST', () => {
     });
 
     it('Create a non admin account', (done) => {
-      chai
-        .request(server)
-        .post(`${route}/create-user`)
-        .send({
-          email: 'notadmin@gmail.com',
-          password: 'notadmin',
-          jobRole: 'Engineer',
-        })
+      const notadmin = {
+        email: 'notadmin@gmail.com',
+        password: 'notadmin',
+        jobRole: 'Engineer',
+      };
+      utils
+        .createUser(notadmin, route)
         .then((res) => {
+          Test.employee(res);
           const { data } = res.body;
-          expect(data).to.have.property('token');
-          expect(data).to.have.property('userId');
-          const { message } = data;
-          expect(message).to.be.eql('User account successfully created');
           nonAdmin.token = data.token;
           done();
         })
@@ -54,14 +42,11 @@ describe('EMPLOYEE AUTHENTICATION TEST', () => {
     });
 
     it('throw error if employee email already exists', (done) => {
-      chai
-        .request(server)
-        .post(`${route}/create-user`)
-        .send(employee)
+      utils
+        .createUser(employee, route)
         .then((res) => {
-          const { status, error } = res.body;
-          expect(status).to.eql('error');
-          expect(error).to.be.eql(
+          Test.error(
+            res,
             `Employee with email ${employee.email.toUpperCase()} already exists`,
           );
           done();
@@ -71,29 +56,22 @@ describe('EMPLOYEE AUTHENTICATION TEST', () => {
   });
 
   describe('Sign in feature', () => {
+    const route = '/api/v1/auth/signin';
     it('Admin can sign in', (done) => {
-      chai
-        .request(server)
-        .post(`${route}/signin`)
-        .send(validEmployee)
+      utils
+        .signIn(validEmployee, route)
         .then((res) => {
-          const { data } = res.body;
-          expect(data).to.have.property('token');
-          expect(data).to.have.property('userId');
+          Test.employee(res);
           done();
         })
         .catch(err => done(err));
     });
 
     it('Throw Error for an invalid user', (done) => {
-      chai
-        .request(server)
-        .post(`${route}/signin`)
-        .send(invalidEmployee)
+      utils
+        .signIn(invalidEmployee, route)
         .then((res) => {
-          const { status } = res.body;
-          expect(res).to.have.property('error');
-          expect(status).to.eql('error');
+          Test.error(res);
           done();
         })
         .catch(err => done(err));
@@ -101,42 +79,27 @@ describe('EMPLOYEE AUTHENTICATION TEST', () => {
   });
 
   describe('Admin/Non admin create user account', () => {
+    const route = '/api/v1/auth/create-user';
+    const newUser = {
+      email: 'newuser@gmail.com',
+      password: 'notadmin',
+      jobRole: 'Engineer',
+    };
     it('Throw Error if non admin wants to create a new account', (done) => {
-      chai
-        .request(server)
-        .post(`${route}/create-user`)
-        .auth(nonAdmin.token, { type: 'bearer' })
-        .send({
-          email: 'newuser@gmail.com',
-          password: 'notadmin',
-          jobRole: 'Engineer',
-        })
+      utils
+        .authUser(newUser, route, nonAdmin.token)
         .then((res) => {
-          expect(res.body).to.have.property('error');
-          expect(res.body.error).to.eql(
-            'Unauthorized access: Only admins are permitted',
-          );
+          Test.error(res, 'Unauthorized access: Only admins are permitted');
           done();
         })
         .catch(err => done(err));
     });
 
     it('Admin can create user account', (done) => {
-      chai
-        .request(server)
-        .post(`${route}/create-user`)
-        .auth(admin.token, { type: 'bearer' })
-        .send({
-          email: 'newuser@gmail.com',
-          password: 'notadmin',
-          jobRole: 'Engineer',
-        })
+      utils
+        .authUser(newUser, route, admin.token)
         .then((res) => {
-          const { data } = res.body;
-          expect(data).to.have.property('token');
-          expect(data).to.have.property('userId');
-          const { message } = data;
-          expect(message).to.be.eql('User account successfully created');
+          Test.employee(res);
           done();
         })
         .catch(err => done(err));

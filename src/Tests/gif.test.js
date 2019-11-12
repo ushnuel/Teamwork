@@ -1,29 +1,25 @@
-/* eslint-disable no-unused-expressions */
 import { describe, it, before } from 'mocha';
-import chai, { expect, should } from 'chai';
-import chaiHttp from 'chai-http';
 import fs from 'fs';
-
 import server from '..';
 import Gif from './Mockups/gif';
+import Utils from './Utils';
+import Test from './chaiHelpers';
 
-chai.use(chaiHttp);
-should();
 const { gifPost, post } = new Gif();
-const route = '/api/v1';
 const newEmployee = {};
 const newGif = {};
+const utils = new Utils(server);
 
 describe('GIF TESTS', () => {
   before((done) => {
-    chai
-      .request(server)
-      .post(`${route}/auth/create-user`)
-      .send({
-        email: 'gifemployee@gmail.com',
-        password: 'gifemployee',
-        jobRole: 'admin',
-      })
+    const employee = {
+      email: 'gifemployee@gmail.com',
+      password: 'gifemployee',
+      jobRole: 'admin',
+    };
+    const route = '/api/v1/auth/create-user';
+    utils
+      .createUser(employee, route)
       .then((res) => {
         const { data } = res.body;
         newEmployee.token = data.token;
@@ -33,23 +29,14 @@ describe('GIF TESTS', () => {
   });
 
   describe('POST /gifs', () => {
+    const route = '/api/v1/gifs';
     it('Employees can create and share gif with colleaques', (done) => {
       const file = fs.readFileSync(gifPost.imagePath);
-      chai
-        .request(server)
-        .post(`${route}/gifs`)
-        .auth(newEmployee.token, { type: 'bearer' })
-        .set('Content-Type', 'application/x-www-form-urlencoded')
-        .field('title', post.title)
-        .attach('image', file, 'giphy.gif')
+      utils
+        .postGif(post, route, newEmployee.token, file, 'giphy.gif')
         .then((res) => {
-          const { data } = res.body;
-          expect(data).have.property('image_url');
-          expect(data).to.have.property('gifid');
-          expect(data).to.have.property('createdon');
-          const { message } = data;
-          expect(message).to.eql('GIF image successfully posted');
-          newGif.id = data.gifid;
+          Test.gif(res);
+          newGif.id = res.body.data.gifid;
           done();
         })
         .catch(err => done(err));
@@ -57,18 +44,11 @@ describe('GIF TESTS', () => {
 
     it('throw error if image is not in gif format', (done) => {
       const file = fs.readFileSync(gifPost.incorrectImagePath);
-      chai
-        .request(server)
-        .post(`${route}/gifs`)
-        .auth(newEmployee.token, { type: 'bearer' })
-        .set('Content-Type', 'application/x-www-form-urlencoded')
-        .field('title', post.title)
-        .attach('image', file, 'jpeg.jpg')
+      utils
+        .postGif(post, route, newEmployee.token, file, 'jpeg.jpg')
         .then((res) => {
-          expect(res.body).have.property('error');
-
-          const { error } = res.body;
-          expect(error).to.eql(
+          Test.error(
+            res,
             'Invalid image format: Image should be in a gif format',
           );
           done();
@@ -79,14 +59,10 @@ describe('GIF TESTS', () => {
 
   describe('GET gifs/:gifId', () => {
     it('Employees can view a specific gif post and its comments(if any)', (done) => {
-      chai
-        .request(server)
-        .get(`${route}/gifs/${newGif.id}`)
-        .auth(newEmployee.token, { type: 'bearer' })
+      utils
+        .get(`/api/v1/gifs/${newGif.id}`, newEmployee.token)
         .then((res) => {
-          const { data } = res.body;
-          expect(data).have.property('comments');
-          expect(data.comments).to.be.an('array');
+          Test.get(res);
           done();
         })
         .catch(err => done(err));
@@ -95,43 +71,32 @@ describe('GIF TESTS', () => {
 
   describe('GET gifs/feed', () => {
     it('Employees can view all gif posts', (done) => {
-      chai
-        .request(server)
-        .get(`${route}/gifs/feed`)
-        .auth(newEmployee.token, { type: 'bearer' })
+      utils
+        .get('/api/v1/gifs/feed', newEmployee.token)
         .then((res) => {
-          const { data, status } = res.body;
-          expect(status).to.eql('success');
-          expect(data).to.be.an('array').and.not.empty;
+          Test.feed(res);
           done();
         })
         .catch(error => done(error));
     });
   });
 
-  describe('DELETE /gifs/:gifId', () => {
+  describe('DELETE gifs/:gifId', () => {
     it('Employees can delete their gif posts', (done) => {
-      chai
-        .request(server)
-        .delete(`${route}/gifs/${newGif.id}`)
-        .auth(newEmployee.token, { type: 'bearer' })
+      utils
+        .delete(`/api/v1/gifs/${newGif.id}`, newEmployee.token)
         .then((res) => {
-          const { message } = res.body.data;
-          expect(message).to.eql('Gif post successfully deleted');
+          Test.delete(res, 'Gif post successfully deleted');
           done();
         })
         .catch(err => done(err));
     });
 
     it('Throw error if gif does not exist', (done) => {
-      chai
-        .request(server)
-        .delete(`${route}/gifs/${newGif.id + 1}`)
-        .auth(newEmployee.token, { type: 'bearer' })
+      utils
+        .delete(`/api/v1/gifs/${newGif.id + 1}`, newEmployee.token)
         .then((res) => {
-          expect(res.body).to.have.property('error');
-          const { error } = res.body;
-          expect(error).to.eql('Gif not found, cannot process request');
+          Test.error(res, 'Gif not found, cannot process request');
           done();
         })
         .catch(err => done(err));

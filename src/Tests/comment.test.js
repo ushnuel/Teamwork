@@ -1,45 +1,36 @@
 import { describe, it, before } from 'mocha';
-import chai, { expect, should } from 'chai';
-import chaiHttp from 'chai-http';
 import fs from 'fs';
-
+import Utils from './Utils';
+import Test from './chaiHelpers';
 import server from '..';
 import Article from './Mockups/article';
 import Comment from './Mockups/comment';
 import Gif from './Mockups/gif';
 
-chai.use(chaiHttp);
-should();
-
 const { article } = new Article();
 const { comment } = new Comment();
 const { post, gifPost } = new Gif();
-const route = '/api/v1';
 const newEmployee = {};
 const newArticle = {};
-const newComment = {};
 const newGif = {};
+const utils = new Utils(server);
 
 describe('EMPLOYEE COMMENT TESTS', () => {
   before((done) => {
-    chai
-      .request(server)
-      .post(`${route}/auth/create-user`)
-      .send({
-        email: 'employeecomment@gmail.com',
-        password: 'employeecomment',
-        jobRole: 'admin',
-      })
+    const employee = {
+      email: 'employeecomment@gmail.com',
+      password: 'employeecomment',
+      jobRole: 'admin',
+    };
+    utils
+      .createUser(employee, '/api/v1/auth/create-user')
       .then((res) => {
         const { data } = res.body;
         newEmployee.token = data.token;
       })
       .then(() => {
-        chai
-          .request(server)
-          .post(`${route}/articles`)
-          .auth(newEmployee.token, { type: 'bearer' })
-          .send(article)
+        utils
+          .post('/api/v1/articles', newEmployee.token, article)
           .then((res) => {
             const { data } = res.body;
             newArticle.id = data.articleid;
@@ -48,13 +39,8 @@ describe('EMPLOYEE COMMENT TESTS', () => {
       })
       .then(() => {
         const file = fs.readFileSync(gifPost.imagePath);
-        chai
-          .request(server)
-          .post(`${route}/gifs`)
-          .auth(newEmployee.token, { type: 'bearer' })
-          .set('Content-Type', 'application/x-www-form-urlencoded')
-          .field('title', post.title)
-          .attach('image', file, 'giphy.gif')
+        utils
+          .postGif(post, '/api/v1/gifs', newEmployee.token, file, 'giph.gif')
           .then((res) => {
             const { data } = res.body;
             newGif.id = data.gifid;
@@ -67,20 +53,14 @@ describe('EMPLOYEE COMMENT TESTS', () => {
 
   describe('POST /articles/articleId/comment', () => {
     it('Employees can comment on an article', (done) => {
-      chai
-        .request(server)
-        .post(`${route}/articles/${newArticle.id}/comment`)
-        .auth(newEmployee.token, { type: 'bearer' })
-        .send(comment)
+      utils
+        .post(
+          `/api/v1/articles/${newArticle.id}/comment`,
+          newEmployee.token,
+          comment,
+        )
         .then((res) => {
-          const { data } = res.body;
-          expect(data).have.property('articleTitle');
-          expect(data).to.have.property('comment');
-          expect(data).to.have.property('article');
-          expect(data).to.have.property('createdon');
-          const { message } = data;
-          expect(message).to.eql('Comment successfully created');
-          newComment.id = data.id;
+          Test.comment(res);
           done();
         })
         .catch(err => done(err));
@@ -89,18 +69,10 @@ describe('EMPLOYEE COMMENT TESTS', () => {
 
   describe('POST /gifs/gifId/comment', () => {
     it('Employees can comment on a gif post', (done) => {
-      chai
-        .request(server)
-        .post(`${route}/gifs/${newGif.id}/comment`)
-        .auth(newEmployee.token, { type: 'bearer' })
-        .send(comment)
+      utils
+        .post(`/api/v1/gifs/${newGif.id}/comment`, newEmployee.token, comment)
         .then((res) => {
-          const { data } = res.body;
-          expect(data).have.property('gifTitle');
-          expect(data).to.have.property('comment');
-          expect(data).to.have.property('createdon');
-          const { message } = data;
-          expect(message).to.eql('Comment successfully created');
+          Test.comment(res);
           done();
         })
         .catch(err => done(err));
