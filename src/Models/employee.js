@@ -1,52 +1,24 @@
-import bcrypt from 'bcrypt';
-import DB from '../DB';
+import Database from '../DB/database';
 import { ErrorHandler } from '../Helpers';
 
-export default class Employee {
-  static async create({
-    firstName,
-    lastName,
-    jobRole,
-    email,
-    password,
-    department,
-    address,
-    gender,
-  }) {
-    const query = `
-    INSERT 
-    INTO 
-    employees (firstName, lastName, jobRole, email, password, department, address, gender)
-    VALUES($1,$2,$3,$4,$5,$6,$7,$8)
-    RETURNING *`;
-    const encryptedPswd = await bcrypt.hash(password, 10);
+export default class Employee extends Database {
+  constructor() {
+    super('employees');
+  }
 
-    const params = [
-      firstName,
-      lastName,
-      jobRole,
-      email,
-      encryptedPswd,
-      department,
-      address,
-      gender,
-    ];
-    const employee = await DB.query(query, params).catch((err) => {
-      throw new ErrorHandler(err.message, 400);
-    });
+  async getEmail(email) {
+    const employee = await this.get('email', email, '*');
     return employee;
   }
 
-  static async getEmployeeEmail(email) {
-    const query = `
-    SELECT 
-    * 
-    FROM employees
-    WHERE email = $1`;
-    const param = [email];
-    const employee = await DB.query(query, param).catch((err) => {
-      throw new ErrorHandler(err.message, 400);
-    });
-    return employee;
+  static userExist(user, userExist = true) {
+    if (user && userExist) {
+      throw new ErrorHandler(
+        `Employee with email ${user.email} already exists`,
+      );
+    }
+    if (!user && !userExist) {
+      throw new ErrorHandler('Operation failed: Email does not exist', 404);
+    }
   }
 }

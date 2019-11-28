@@ -10,7 +10,7 @@ export default class JWT {
   static authorize(req, res, next) {
     try {
       if (!req.headers.authorization) {
-        throw new ErrorHandler('Invalid authorization header', 401);
+        throw new ErrorHandler('Invalid authorization header. Please log in to continue', 401);
       }
       const token = req.headers.authorization.split(' ')[1];
       if (token) {
@@ -63,7 +63,7 @@ export default class JWT {
       if (token) {
         jwt.verify(token, config.JWT_SECRET, (err, decoded) => {
           if (err) {
-            throw new ErrorHandler('Invalid authorization token', 401);
+            throw new ErrorHandler('Invalid authorization token. Please log in to continue', 401);
           }
           req.user = decoded;
           next();

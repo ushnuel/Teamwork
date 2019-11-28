@@ -12,6 +12,6 @@ router.use('/auth', EmployeeRoute);
 router.use('/gifs', Jwt.authorize, GifRoute);
 router.use('/articles', ArticleRoute);
 router.use('/', CommentRoute);
-router.get('/feed', Jwt.authorize, ArticleController.feed);
+router.get('/feeds', Jwt.authorize, ArticleController.feed);
 
 export default router;

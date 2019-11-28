@@ -1,4 +1,4 @@
-import cloudinary, { uploader } from 'cloudinary';
+import cloudinary from 'cloudinary';
 import Datauri from 'datauri';
 
 import config from '../Config';
@@ -20,8 +20,11 @@ export default class Cloudinary {
       }
       const image = datauri.format('.gif', req.file.buffer).content;
       cloudinary.config(config.CLOUDINARY);
-      uploader
-        .upload(image)
+      cloudinary.v2.uploader
+        .upload(image, {
+          folder: Cloudinary.folder(),
+          use_filename: true,
+        })
         .then((response) => {
           req.body.image_url = response.url;
           next();
@@ -30,5 +33,20 @@ export default class Cloudinary {
     } catch (error) {
       next(error);
     }
+  }
+
+  static folder() {
+    let folder = '';
+    switch (config.NODE_ENV) {
+      case 'dev':
+        folder = 'Teamwork_dev';
+        break;
+      case 'prod':
+        folder = 'Teamwork_prod';
+        break;
+      default:
+        break;
+    }
+    return folder;
   }
 }

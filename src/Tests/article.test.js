@@ -55,10 +55,10 @@ describe('ARTICLE TESTS', () => {
     });
   });
 
-  describe('GET /feed', () => {
+  describe('GET /feeds', () => {
     it('Employees can view all articles', (done) => {
       utils
-        .get('/api/v1/feed', newEmployee.token)
+        .get('/api/v1/feeds', newEmployee.token)
         .then((res) => {
           Test.feed(res);
           done();

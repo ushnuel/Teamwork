@@ -47,7 +47,7 @@ describe('EMPLOYEE AUTHENTICATION TEST', () => {
         .then((res) => {
           Test.error(
             res,
-            `Employee with email ${employee.email.toUpperCase()} already exists`,
+            `Employee with email ${employee.email} already exists`,
           );
           done();
         })

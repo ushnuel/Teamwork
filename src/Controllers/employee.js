@@ -1,31 +1,23 @@
 import bcrypt from 'bcrypt';
 import Employee from '../Models/employee';
-import JWT from '../Middlewares/jwtHelper';
-import { FeedbackHandler, ErrorHandler, InputValidation } from '../Helpers';
+import Utils from '../Utils';
+import { ErrorHandler, InputValidation } from '../Helpers';
+
+const Model = new Employee();
 
 export default class EmployeeController {
   static async signUp(req, res, next) {
     try {
+      const { ...body } = req.body;
+      body.password = await bcrypt.hash(body.password, 10);
       const error = InputValidation(req);
       if (error) {
         throw new ErrorHandler(error, 422);
       }
-      const newEmployee = await Employee.getEmployeeEmail(req.body.email);
-      if (newEmployee) {
-        throw new ErrorHandler(
-          `Employee with email ${newEmployee.email.toUpperCase()} already exists`,
-        );
-      }
-      const employee = await Employee.create(req.body);
-      const payload = {
-        status: employee.jobrole,
-        email: employee.email,
-        userId: employee.id,
-      };
-      const token = JWT.createToken(payload);
-      const message = 'User account successfully created';
-      const data = { token, message, userId: employee.id };
-      FeedbackHandler.success(res, 201, data);
+      const user = await Model.getEmail(req.body.email);
+      Employee.userExist(user, true);
+      const employee = await Model.create(body);
+      Utils.help(employee, res, 'User account successfully created', 201);
     } catch (error) {
       next(error);
     }
@@ -38,10 +30,8 @@ export default class EmployeeController {
       if (error) {
         throw new ErrorHandler(error, 422);
       }
-      const employee = await Employee.getEmployeeEmail(email);
-      if (!employee) {
-        throw new ErrorHandler('Operation failed: Email does not exist', 404);
-      }
+      const employee = await Model.getEmail(email);
+      Employee.userExist(employee, false);
       const passwordMatched = await bcrypt.compare(password, employee.password);
       if (!passwordMatched) {
         throw new ErrorHandler(
@@ -49,13 +39,7 @@ export default class EmployeeController {
           404,
         );
       }
-      const token = JWT.createToken({
-        userId: employee.id,
-        status: employee.jobrole,
-        email: employee.email,
-      });
-      const data = { token, userId: employee.id };
-      FeedbackHandler.success(res, 200, data);
+      Utils.help(employee, res, undefined, 200);
     } catch (error) {
       next(error);
     }
