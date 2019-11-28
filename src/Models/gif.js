@@ -22,8 +22,8 @@ export default class Gif {
   static async get(gifId) {
     const query = `
     SELECT
-    gifid as id,
-    employeeid as authorid,
+    gifid,
+    employeeid,
     title,
     image_url as url,
     createdon

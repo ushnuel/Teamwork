@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 export default class FeedbackHandler {
   static success(res, status = 200, data) {
-    res.status(status).json({
+    return res.status(status).json({
       status: 'success',
       data,
     });
@@ -10,7 +10,7 @@ export default class FeedbackHandler {
   static error(err, req, res, next) {
     const { status = 400, message } = err;
     const error = message;
-    res.status(status).json({
+    return res.status(status).json({
       status: 'error',
       error,
     });

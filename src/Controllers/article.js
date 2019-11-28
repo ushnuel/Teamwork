@@ -1,45 +1,34 @@
 import Article from '../Models/article';
 import { FeedbackHandler, ErrorHandler, InputValidation } from '../Helpers';
 import Comment from '../Models/comment';
+import Utils from '../Utils';
+
+const Model = new Article();
 
 export default class ArticleController {
   static async createArticle(req, res, next) {
     try {
+      const { ...body } = req.body;
+      const { userId } = req.user;
+      const employeeid = userId;
+      const data = { ...body, employeeid };
       const error = InputValidation(req);
       if (error) {
-        throw new ErrorHandler(error, 422);
+        throw new ErrorHandler(error, 400);
       }
-      const article = await Article.create(req.body, req.user.userId);
-      const message = 'Article successfully posted';
-      const returnedFields = ArticleController.removeField(article);
-      const data = { message, ...returnedFields };
-      FeedbackHandler.success(res, 201, data);
+      const article = await Model.create(data);
+      Utils.help(article, res, 'Article successfully posted', 201);
     } catch (error) {
       next(error);
     }
   }
 
-  static removeField({ article, ...otherParams }) {
-    return otherParams;
-  }
-
   static async edit(req, res, next) {
     try {
-      const articleCheck = await Article.get(req.params.articleId);
-      if (articleCheck.id !== req.user.userId) {
-        throw new ErrorHandler(
-          "You don't have permission to edit this article",
-          403,
-        );
-      }
-      const article = await Article.edit(
-        req.user.userId,
-        req.body,
-        articleCheck.id,
-      );
-      const message = 'Article successfully updated';
-      const data = { message, ...article };
-      FeedbackHandler.success(res, 200, data);
+      const response = await Model.getArticle(req.params.articleId);
+      Article.checkAccess(response, req.user.userId, 'edit', 'article');
+      const article = await Model.edit(req.user.userId, req.body, response.articleid);
+      Utils.help(article, res, 'Article successfully updated', 200);
     } catch (error) {
       next(error);
     }
@@ -47,16 +36,10 @@ export default class ArticleController {
 
   static async delete(req, res, next) {
     try {
-      const article = await Article.get(req.params.articleId);
-      if (article.authorid !== req.user.userId) {
-        throw new ErrorHandler(
-          "You don't have permission to delete this article",
-          403,
-        );
-      }
-      await Article.delete(req.user.userId, article.id);
-      const data = { message: 'Article successfully deleted' };
-      FeedbackHandler.success(res, 200, data);
+      const response = await Model.getArticle(req.params.articleId);
+      Article.checkAccess(response, req.user.userId, 'delete', 'article');
+      await Model.delete('employeeid', 'articleid', req.user.userId, response.articleid);
+      Utils.help(null, res, 'Article successfully deleted', 200);
     } catch (error) {
       next(error);
     }
@@ -64,9 +47,8 @@ export default class ArticleController {
 
   static async feed(req, res, next) {
     try {
-      const articles = await Article.feed();
-      const data = [...articles];
-      FeedbackHandler.success(res, 200, data);
+      const articles = await Model.feed();
+      Utils.help([articles], res, '', 200);
     } catch (error) {
       next(error);
     }
@@ -74,8 +56,8 @@ export default class ArticleController {
 
   static async get(req, res, next) {
     try {
-      const article = await Article.get(req.params.articleId);
-      const response = await Comment.get(article.id);
+      const article = await Model.getArticle(req.params.articleId);
+      const response = await Comment.get(article.articleid);
       const comments = [...response];
       const data = { ...article, comments };
       FeedbackHandler.success(res, 200, data);
